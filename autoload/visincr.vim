@@ -92,6 +92,16 @@ endif
 " ==============================================================================
 "  Functions: {{{1
 
+let s:support_override_cnt_cmds = [s:I, s:IB, s:IO, s:IX]
+
+function! s:GetRealCnt(method, cnt, args)
+  if index(s:support_override_cnt_cmds, a:method) < 0 || len(a:args) < 2
+    return a:cnt
+  endif
+
+  return a:args[1]
+endfunction
+
 " ------------------------------------------------------------------------------
 " VisBlockIncr:	{{{2
 fun! visincr#VisBlockIncr(method,...)
@@ -602,8 +612,7 @@ fun! visincr#VisBlockIncr(method,...)
 
   let cntlen = strlen(cnt)
   let cnt    = substitute(cnt,'\s','',"ge")
-  let ocnt   = cnt
-"  call Decho("cntlen=".cntlen." cnt=".cnt." ocnt=".ocnt." (before I*[BXOR] subs)")
+"  call Decho("cntlen=".cntlen." cnt=".cnt." (before I*[BXOR] subs)")
 
   " elide leading zeros
   if method == s:IX || method == s:IIX
@@ -617,6 +626,8 @@ fun! visincr#VisBlockIncr(method,...)
   else
    let cnt= substitute(cnt,'^0*\([1-9]\|0$\)','\1',"ge")
   endif
+
+  let cnt = s:GetRealCnt(a:method, cnt, a:000)
 "  call Decho("cnt<".cnt."> pat<".pat.">")
 
   " left-method with zeros {{{3
@@ -624,7 +635,7 @@ fun! visincr#VisBlockIncr(method,...)
   " AND we're justified right
   " AND increment is positive
   " AND user didn't specify a modeding character
-  if a:0 < 2 && ( method == s:II || method == s:IIX || method == s:IIO) && cnt != ocnt && incr > 0
+  if a:0 < 2 && ( method == s:II || method == s:IIX || method == s:IIO) && incr > 0
    let zfill= '0'
   endif
 
