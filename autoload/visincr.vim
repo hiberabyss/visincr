@@ -636,7 +636,7 @@ fun! visincr#VisBlockIncr(method,...)
   " AND increment is positive
   " AND user didn't specify a modeding character
   if a:0 < 2 && ( method == s:II || method == s:IIX || method == s:IIO) && incr > 0
-   let zfill= '0'
+   let zfill= ' '
   endif
 
   " determine how much incrementing is needed {{{3
